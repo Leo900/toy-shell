@@ -10,7 +10,7 @@
 #include <dirent.h>
 #define MAX_LEN_LINE    100
 #define LEN_HOSTNAME	30
-
+#define MAX_DIR_LINE    100
 
 int main(void)
 {
@@ -23,6 +23,8 @@ int main(void)
 
     pid_t pid, cpid;
     char hostname[LEN_HOSTNAME + 1];
+
+
     memset(hostname, 0x00, sizeof(hostname));
     printf("username: %s\n", getpwuid(getuid())->pw_name);
 
@@ -33,7 +35,9 @@ int main(void)
     while (true) {
         char *s;
         int len;
-        printf("\033[34mpresentLee $ \033[32m%s/\033[32m%s $ :\033[0m ", hostname, getpwuid(getuid())->pw_name);
+    	char cwd[MAX_DIR_LINE];
+    	getcwd(cwd,sizeof(cwd));
+        printf("\033[34mpresentLee $ \033[32m%s/\033[32m%s $ :\033[0m ", hostname, cwd);
         s = fgets(command, MAX_LEN_LINE, stdin);
         if (s == NULL) {
             fprintf(stderr, "fgets failed\n");
