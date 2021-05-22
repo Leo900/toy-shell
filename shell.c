@@ -5,9 +5,9 @@
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <pwd.h>
 #include <errno.h>
 #include <dirent.h>
-
 #define MAX_LEN_LINE    100
 #define LEN_HOSTNAME	30
 
@@ -33,7 +33,6 @@ int main(void)
     while (true) {
         char *s;
         int len;
-        
         printf("\033[34mpresentLee $ \033[32m%s/\033[32m%s $ :\033[0m ", hostname, getpwuid(getuid())->pw_name);
         s = fgets(command, MAX_LEN_LINE, stdin);
         if (s == NULL) {
@@ -49,22 +48,22 @@ int main(void)
         
         printf("[%s]\n", command);
 
-	    if (!strcmp(command, "exit")){
-		    printf("It's over!!\n");
-		    break;
-	    }
+	if (!strcmp(command, "exit")){
+		printf("It's over!!\n");
+		break;
+	}
 
-	    path = strtok(command," ");
-	    if(!strcmp(args[0], "cd"))
-	    {
-		    path = strtok(NULL, " ");
-	    	    if(chdir(path)<0){
-			    printf("No Directory [%s].\n", path);
-		    }
-		    else{
-			    printf("Correct!\n");
-		    }
-	    }
+	path = strtok(command," ");
+	if(!strcmp(args[0], "cd"))
+	{
+		path = strtok(NULL, " ");
+	    	if(chdir(path)<0){
+			printf("No Directory [%s].\n", path);
+		}
+		else{
+			printf("Correct!\n");
+		}
+	}
         pid = fork();
         if (pid < 0) {
             fprintf(stderr, "fork failed\n");
@@ -83,27 +82,28 @@ int main(void)
         }
 
         else {  /* child */
-	        if(!strcmp(command, "ls")){
-		        path = strtok(NULL, " ");
-		        args[0] = "/bin/ls";
-		        args[1] = path;
+	    if(!strcmp(command, "ls")){
+		path = strtok(NULL, " ");
+		args[0] = "/bin/ls";
+		args[1] = path;
             } 
 
-	        if(!strcmp(command, "mkdir")){
-		        path = strtok(NULL, " ");
-		        args[0] ="/bin/mkdir";
-		        args[1] = path;
-		        road = strtok(NULL, " ");
-		        args[2] = road;
-	        }
+	    if(!strcmp(command, "mkdir")){
+		path = strtok(NULL, " ");
+		args[0] ="/bin/mkdir";
+		args[1] = path;
+		road = strtok(NULL, " ");
+		args[2] = road;
 
-	        if(!strcmp(command, "rmdir")){
-		        path = strtok(NULL, " ");
-		        args[0] ="/bin/rmdir";
-		        args[1] = path;
-		        road = strtok(NULL, " ");
-		        args[2] = road;
-	        }
+	    }
+
+	    if(!strcmp(command, "rmdir")){
+		path = strtok(NULL, " ");
+		args[0] ="/bin/rmdir";
+		args[1] = path;
+		road = strtok(NULL, " ");
+		args[2] = road;
+	    }
 
             ret = execve(args[0], args, NULL);
             if (ret < 0) {
